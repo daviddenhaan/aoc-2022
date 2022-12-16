@@ -1,6 +1,6 @@
 use std::fs;
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 struct Elve {
     carrying_calories: u32,
 }
@@ -18,8 +18,6 @@ impl From<&Vec<u32>> for Elve
         }
     }
 }
-
-impl Copy for Elve {}
 
 fn main() {
     let data = fs::read_to_string("input.txt")
@@ -39,23 +37,7 @@ fn main() {
         accumulate.clear();
     }
 
-    let mut most_calories_elve: Option<Elve> = None;
-    for elve in elves {
-        if let None = most_calories_elve {
-            most_calories_elve = Option::from(elve);
-            continue;
-        }
+    elves.sort_by(|a, b| b.carrying_calories.cmp(&a.carrying_calories));
 
-        if let Some(_max) = most_calories_elve {
-            if elve.carrying_calories > _max.carrying_calories {
-                most_calories_elve = Option::from(elve);
-            }
-
-            continue;
-        }
-    }
-
-    if let Some(elve) = most_calories_elve {
-        println!("most calories: {}", elve.carrying_calories);
-    }
+    println!("most calories: {}", elves[0].carrying_calories);
 }
