@@ -39,10 +39,7 @@ fn main() {
 
     elves.sort_by(|a, b| b.carrying_calories.cmp(&a.carrying_calories));
     
-    let mut top_three_total: u64 = 0;
-    elves[0..3].iter().for_each(
-        |v| top_three_total += v.carrying_calories as u64
-    );
+    let total: u32 = elves[0..3].iter().map(|v| v.carrying_calories).sum();
 
-    println!("top three total: {}", top_three_total);
+    println!("top three total: {}", total);
 }
