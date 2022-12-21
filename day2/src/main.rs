@@ -30,19 +30,6 @@ impl From<String> for Move {
     }
 }
 
-impl Move {
-    fn against(&self, move_: &Move) -> Outcome {
-        let m = move_.own;
-        if self.strong == m {
-            Outcome::Win
-        } else if self.weak == m {
-            Outcome::Loss
-        } else {
-            Outcome::Draw
-        }
-    }
-}
-
 fn calculate_points(result: Outcome, move_used: MoveOption) -> u16 {
     let mut points = 0;
 
@@ -72,7 +59,7 @@ fn main() {
     
     let mut total_points = 0;
     for round in rounds_vec.iter() {
-        let mut matchup = round
+        let matchup = round
             .split(" ")
             .collect::<Vec<&str>>();
 
