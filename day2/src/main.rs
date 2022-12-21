@@ -6,7 +6,6 @@ enum Outcome {
     Draw,
 }
 
-#[derive(PartialEq, Clone, Copy)]
 enum MoveOption {
     Rock,
     Paper,
@@ -15,16 +14,14 @@ enum MoveOption {
 
 struct Move {
     move_: MoveOption,
-    strong: MoveOption,
-    weak: MoveOption,
 }
 
 impl From<String> for Move {
     fn from(input: String) -> Self {
         match input.to_lowercase().as_str() {
-            "a" | "x" => return Move { move_: MoveOption::Rock, strong: MoveOption::Scissors, weak: MoveOption::Paper },
-            "b" | "y" => return Move { move_: MoveOption::Paper, strong: MoveOption::Rock, weak: MoveOption::Scissors },
-            "c" | "z" => return Move { move_: MoveOption::Scissors, strong: MoveOption::Paper, weak: MoveOption::Rock },
+            "a" | "x" => return Move { move_: MoveOption::Rock },
+            "b" | "y" => return Move { move_: MoveOption::Paper },
+            "c" | "z" => return Move { move_: MoveOption::Scissors },
             _default  => panic!("Invalid move found, exiting program!"),
         }
     }
@@ -37,7 +34,7 @@ fn calculate_points(result: Outcome, move_used: &Move) -> u16 {
         Outcome::Win  => points += 6,
         Outcome::Loss => points += 0,
         Outcome::Draw => points += 3
-    }
+    };
 
     match move_used.move_ {
         MoveOption::Rock     => points += 1,
@@ -50,13 +47,29 @@ fn calculate_points(result: Outcome, move_used: &Move) -> u16 {
 
 impl Move {
     fn against(&self, move_: &Move) -> Outcome {
-        let opponent_move = move_.move_;
-        if opponent_move == self.strong {
-            Outcome::Win
-        } else if opponent_move == self.weak {
-            Outcome::Loss
-        } else {
-            Outcome::Draw
+        match move_.move_ {
+            MoveOption::Rock     => {
+                match self.move_ {
+                    MoveOption::Paper    => Outcome::Win,
+                    MoveOption::Scissors => Outcome::Loss,
+                    MoveOption::Rock     => Outcome::Draw,
+                }
+            },
+            MoveOption::Paper    => {
+                match self.move_ {
+                    MoveOption::Scissors => Outcome::Win,
+                    MoveOption::Rock     => Outcome::Loss,
+                    MoveOption::Paper    => Outcome::Draw,
+                }
+
+            },
+            MoveOption::Scissors => {
+                match self.move_ {
+                    MoveOption::Rock     => Outcome::Win,
+                    MoveOption::Paper    => Outcome::Loss,
+                    MoveOption::Scissors => Outcome::Draw,
+                }
+            },
         }
     }
 }
