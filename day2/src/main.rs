@@ -30,6 +30,19 @@ impl From<String> for Move {
     }
 }
 
+impl Move {
+    fn against(&self, move_: &Move) -> Outcome {
+        let m = move_.own;
+        if self.strong == m {
+            Outcome::Win
+        } else if self.weak == m {
+            Outcome::Loss
+        } else {
+            Outcome::Draw
+        }
+    }
+}
+
 fn calculate_points(result: Outcome, move_used: MoveOption) -> u16 {
     let mut points = 0;
 
