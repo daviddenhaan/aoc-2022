@@ -30,6 +30,24 @@ impl From<String> for Move {
     }
 }
 
+fn calculate_points(result: Outcome, move_used: &Move) -> u16 {
+    let mut points = 0;
+
+    match result {
+        Outcome::Win  => points += 6,
+        Outcome::Loss => points += 0,
+        Outcome::Draw => points += 3
+    };
+
+    match move_used.own {
+        MoveOption::Rock     => points += 1,
+        MoveOption::Paper    => points += 2,
+        MoveOption::Scissors => points += 3,
+    }
+
+    points
+}
+
 impl Move {
     fn against(&self, move_: &Move) -> Outcome {
         let m = move_.own;
@@ -43,24 +61,6 @@ impl Move {
     }
 }
 
-fn calculate_points(result: Outcome, move_used: MoveOption) -> u16 {
-    let mut points = 0;
-
-    match result {
-        Outcome::Win  => points += 6,
-        Outcome::Loss => points += 0,
-        Outcome::Draw => points += 3
-    };
-
-    match move_used {
-        MoveOption::Rock     => points += 1,
-        MoveOption::Paper    => points += 2,
-        MoveOption::Scissors => points += 3,
-    }
-
-    points
-}
-
 fn main() {
     let data = fs::read_to_string("input.txt")
         .expect("Unable to read file.");
@@ -69,22 +69,16 @@ fn main() {
         .map(|v| v.to_string())
         .filter(|v| v != "")
         .collect::<Vec<String>>();
-    
+
     let mut total_points = 0;
     for round in rounds_vec.iter() {
-        let mut matchup = round
-            .split(" ")
-            .collect::<Vec<&str>>();
+        let mut match_moves = Vec::<Move>::new();
+        round.split(" ").for_each(
+            |move_string| match_moves.push(Move::from(move_string.to_string()))
+        );
 
-        let enemy_move = Move::from(matchup[0].to_string());
-        let (outcome, my_move): (Outcome, MoveOption) = match matchup[1].to_lowercase().as_str() {
-            "z" => (Outcome::Win, enemy_move.weak),
-            "x" => (Outcome::Loss, enemy_move.strong),
-            "y" => (Outcome::Draw, enemy_move.own),
-            _default => panic!("Invalid outcome string!"),
-        };
-
-        total_points += calculate_points(outcome, my_move) as u64;
+        let outcome = match_moves[1].against(&match_moves[0]);
+        total_points += calculate_points(outcome, &match_moves[1]) as u64;
     }
 
     println!("Total points: {}", total_points);
